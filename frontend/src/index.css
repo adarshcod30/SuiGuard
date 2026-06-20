@@ -170,3 +170,59 @@ body {
 .status-dot {
   animation: statusPulse 2s ease-in-out infinite;
 }
+
+/* ─── Mode Toggle Switch ─── */
+.toggle-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(13, 17, 23, 0.8);
+  border: 1px solid rgba(48, 54, 61, 0.8);
+  border-radius: 999px;
+  padding: 4px;
+  width: 240px;
+}
+.toggle-option {
+  flex: 1;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.3s ease;
+  color: #8b949e;
+}
+.toggle-option.active {
+  color: #fff;
+}
+.toggle-slider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 4px);
+  background: linear-gradient(135deg, #6fbcf0, #5ba3d9);
+  border-radius: 999px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(111, 188, 240, 0.3);
+}
+.toggle-slider.right {
+  transform: translateX(100%);
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.3);
+}
+
+/* ─── JSON Syntax Highlighting ─── */
+.json-key { color: #6fbcf0; font-weight: 600; }
+.json-string { color: #3fb950; }
+.json-number { color: #d29922; }
+.json-boolean { color: #a78bfa; font-weight: 600; }
+.json-null { color: #f85149; font-weight: 600; }
+
+/* ─── Custom Scrollbar for Code Block ─── */
+pre::-webkit-scrollbar { height: 6px; }
+pre::-webkit-scrollbar-track { background: #010409; }
+pre::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }

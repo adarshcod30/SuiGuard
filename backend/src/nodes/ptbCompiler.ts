@@ -77,11 +77,24 @@ export async function compilePTBNode(
       steps.push(`② Generating a safe no-op PTB for preview only`);
     }
 
+    const amountMistStr = intent.amount ? BigInt(Math.floor(intent.amount * 1_000_000_000)).toString() : '0';
+
     const preview: PTBPreview = {
       steps,
       estimatedGas: '~0.001 SUI',
       estimatedOutput,
-      serialized: intent.action !== 'query_balance' ? tx : null,
+      serialized: intent.action !== 'query_balance' ? {
+        sender: walletAddress,
+        expiration: { None: true },
+        gasData: { payment: [], owner: walletAddress, price: '1000', budget: '2000000' },
+        commands: intent.action === 'transfer' ? [
+          { SplitCoins: [ 'GasCoin', [ amountMistStr ] ] },
+          { TransferObjects: [ [ 'Result(0)' ], intent.recipient ] }
+        ] : [
+          { SplitCoins: [ 'GasCoin', [ amountMistStr ] ] },
+          { MoveCall: { package: CETUS_TESTNET, module: 'router', function: 'swap', arguments: ['Result(0)', amountMistStr, '0'] } }
+        ]
+      } : null,
     };
 
     console.log('✅ [Node 2] PTB compiled with', steps.length, 'steps');
