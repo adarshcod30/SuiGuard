@@ -93,11 +93,9 @@ export async function runPhase2(state: IntentEngineState): Promise<IntentEngineS
   const graph: any = new StateGraph<IntentEngineState>({ channels } as any);
 
   graph.addNode('execute', executorNode as any);
-  graph.addNode('error_end', async (s: IntentEngineState) => ({ ...s, stage: 'error' }));
 
   graph.addEdge(START, 'execute');
   graph.addEdge('execute', END);
-  graph.addEdge('error_end', END);
 
   const compiled = graph.compile();
   const result = await compiled.invoke(state);
