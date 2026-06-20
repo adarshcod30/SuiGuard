@@ -103,6 +103,11 @@ export async function compilePTBNode(
       ptbPreview: preview,
       ptbObject: intent.action !== 'query_balance' ? tx : null,
       stage: 'guardian',
+      backendTrace: [
+        `[PTB_Compiler] Initializing @mysten/sui Transaction Builder...`,
+        `[PTB_Compiler] Constructing PTB for action: ${intent.action}`,
+        `[PTB_Compiler] Added ${steps.length} atomic commands to execution block.`,
+      ]
     };
 
   } catch (e: any) {

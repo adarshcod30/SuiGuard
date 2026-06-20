@@ -26,6 +26,10 @@ const channels = {
   langsmithRunUrl: { value: lastValue, default: () => undefined },
   error: { value: lastValue, default: () => undefined },
   stage: { value: lastValue, default: () => 'parsing' },
+  backendTrace: { 
+    value: (oldVal: string[], newVal: string[]) => [...(oldVal || []), ...(newVal || [])], 
+    default: () => [] 
+  },
 };
 
 function routeAfterGuardian(state: IntentEngineState): string {

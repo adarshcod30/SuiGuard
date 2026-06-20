@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExecuteResponse } from '../App';
+import BackendTerminal from './BackendTerminal';
 
 interface Props {
   data: ExecuteResponse;
@@ -105,6 +106,9 @@ export default function SuccessScreen({ data, intent, onReset }: Props) {
           </div>
         </div>
       )}
+
+      {/* Embedded Terminal Trace */}
+      {data.backendTrace && <BackendTerminal trace={data.backendTrace} />}
     </div>
   );
 }

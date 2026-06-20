@@ -48,5 +48,6 @@ export interface IntentEngineState {
   explorerUrl?: string;
   langsmithRunUrl?: string;
   error?: string;
+  backendTrace?: string[];
   stage: 'parsing' | 'compiling' | 'guardian' | 'awaiting_confirmation' | 'executing' | 'done' | 'error';
 }

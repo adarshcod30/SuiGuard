@@ -70,6 +70,7 @@ app.post('/api/intent', async (req, res) => {
       guardianResult: state.guardianResult,
       stage: state.stage,
       error: state.error,
+      backendTrace: state.backendTrace,
       walletBalance: freshBalance,
       walletAddress,
       langsmithUrl,

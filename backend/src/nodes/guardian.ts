@@ -205,5 +205,12 @@ export async function guardianNode(
   return {
     guardianResult,
     stage: 'awaiting_confirmation',
+    backendTrace: [
+      `[Guardian] Initializing 5-Tier Pre-flight Simulation...`,
+      `[Guardian] Simulating tx gas usage and checking slippage models...`,
+      `[Guardian] Fetching Sui Network epoch for oracle staleness check...`,
+      `[Guardian] Simulation complete. Passed: ${passed}, Score: ${riskScore}/100`,
+      ...flags.map(f => `[Guardian] ${f.level} - ${f.class}: ${f.message}`)
+    ]
   };
 }

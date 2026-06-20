@@ -81,6 +81,12 @@ export async function parseIntentNode(
       return {
         intent,
         stage: 'compiling',
+        backendTrace: [
+          `[System] Input received: "${state.userInput}"`,
+          `[System] Invoking LLM Model: ${modelName} via AWS Bedrock...`,
+          `[LLM] Successfully parsed unstructured input into JSON schema:`,
+          JSON.stringify(intent, null, 2)
+        ]
       };
     }
   }

@@ -17,6 +17,7 @@ export interface IntentResponse {
   walletBalance: number;
   walletAddress: string;
   langsmithUrl: string;
+  backendTrace?: string[];
 }
 
 export interface ExecuteResponse {

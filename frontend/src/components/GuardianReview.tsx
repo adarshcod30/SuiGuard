@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IntentResponse } from '../App';
+import BackendTerminal from './BackendTerminal';
 
 interface Props {
   data: IntentResponse;
@@ -273,6 +274,9 @@ export default function GuardianReview({ data, onConfirm }: Props) {
                 </table>
               </div>
             </div>
+
+            {/* Backend Trace */}
+            {data.backendTrace && <BackendTerminal trace={data.backendTrace} />}
 
           </div>
         )}
