@@ -50,7 +50,7 @@ export default function App() {
 
   const handleSubmitIntent = async (input: string) => {
     setStage('loading');
-    setLoadingMessage('Parsing your intent with Gemini AI...');
+    setLoadingMessage('Parsing your intent with Amazon Nova AI...');
     setError(null);
 
     try {
@@ -210,7 +210,7 @@ export default function App() {
             <span>Built for Sui Overflow 2026 · Agentic Web Track</span>
           </div>
           <div className="flex items-center gap-4">
-            <span>Powered by LangGraph + Gemini + Sui PTBs</span>
+            <span>Powered by LangGraph + AWS Bedrock + Sui PTBs</span>
           </div>
         </div>
       </footer>

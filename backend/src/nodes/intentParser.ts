@@ -1,4 +1,4 @@
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatBedrockConverse } from '@langchain/aws';
 import { z } from 'zod';
 import { IntentEngineState, StructuredIntent } from '../types.js';
 
@@ -22,15 +22,24 @@ If no amount is specified for a query, use 0.
 If the user asks about their balance, wallet, or holdings, that's a query_balance action.
 Always extract a specific numeric amount — never leave it as 0 unless it's a balance query.`;
 
-// Models to try in order — gemini-2.0-flash-lite has higher free-tier quotas
-const MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-1.5-pro-latest'];
+// Amazon Nova models on Bedrock — no model access request needed
+const MODELS = [
+  'amazon.nova-lite-v1:0',
+  'amazon.nova-micro-v1:0',
+  'amazon.nova-pro-v1:0',
+];
 
 async function tryParseWithModel(modelName: string, userInput: string): Promise<StructuredIntent | null> {
   try {
-    const llm = new ChatGoogleGenerativeAI({
+    const llm = new ChatBedrockConverse({
       model: modelName,
+      region: process.env.AWS_REGION || 'us-east-1',
       temperature: 0,
-      maxRetries: 2,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        ...(process.env.AWS_SESSION_TOKEN ? { sessionToken: process.env.AWS_SESSION_TOKEN } : {}),
+      },
     }).withStructuredOutput(IntentSchema);
 
     const result = await llm.invoke([
@@ -40,7 +49,8 @@ async function tryParseWithModel(modelName: string, userInput: string): Promise<
 
     return result as StructuredIntent;
   } catch (e: any) {
-    console.warn(`⚠️  Model ${modelName} failed:`, e.status || e.message?.slice(0, 100));
+    const errMsg = e.message?.slice(0, 120) || 'Unknown error';
+    console.warn(`⚠️  Model ${modelName} failed:`, errMsg);
     return null;
   }
 }
@@ -78,7 +88,7 @@ export async function parseIntentNode(
   // All models failed
   console.error('❌ [Node 1] All models failed to parse intent');
   return {
-    error: `Gemini API is temporarily rate-limited. Please wait 30 seconds and try again. If this persists, check your API key at https://aistudio.google.com/apikey`,
+    error: `Failed to parse intent. Please check your AWS credentials in .env (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION) and ensure Amazon Nova models are enabled in your Bedrock console.`,
     stage: 'error',
   };
 }

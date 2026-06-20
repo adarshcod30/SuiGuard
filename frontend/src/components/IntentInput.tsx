@@ -12,7 +12,7 @@ const EXAMPLES = [
 ];
 
 const PIPELINE_STEPS = [
-  { num: '01', label: 'Parse Intent', desc: 'Gemini AI extracts your goal', icon: '🧠', color: 'from-blue-500 to-cyan-400' },
+  { num: '01', label: 'Parse Intent', desc: 'Amazon Nova extracts your goal', icon: '🧠', color: 'from-blue-500 to-cyan-400' },
   { num: '02', label: 'Compile PTB', desc: 'Build Sui transaction block', icon: '⚙️', color: 'from-cyan-400 to-teal-400' },
   { num: '03', label: 'Guardian Check', desc: '5-layer risk analysis', icon: '🛡️', color: 'from-teal-400 to-emerald-400' },
   { num: '04', label: 'You Confirm', desc: 'Review before execution', icon: '✅', color: 'from-emerald-400 to-green-400' },

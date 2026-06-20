@@ -9,8 +9,8 @@
     "setup-wallet": "tsx src/sui/wallet.ts"
   },
   "dependencies": {
+    "@langchain/aws": "^0.1.4",
     "@langchain/core": "^0.3.0",
-    "@langchain/google-genai": "^0.2.18",
     "@langchain/langgraph": "^0.2.0",
     "@mysten/sui": "^1.0.0",
     "cors": "^2.8.5",
