@@ -6,21 +6,26 @@ import { guardianNode } from './nodes/guardian.js';
 import { executorNode } from './nodes/executor.js';
 
 // Channel definitions for LangGraph state
+// The value reducer takes (oldVal, newVal) and returns the merged result.
+// We use a "last writer wins" strategy but preserve existing values when
+// a node doesn't return that field (newVal is undefined).
+const lastValue = (oldVal: any, newVal: any) => newVal !== undefined ? newVal : oldVal;
+
 const channels = {
-  userInput: { value: (x: string) => x, default: () => '' },
-  sessionId: { value: (x: string) => x, default: () => '' },
-  walletAddress: { value: (x: string) => x, default: () => '' },
-  walletBalance: { value: (x: number) => x, default: () => 0 },
-  intent: { value: (x: any) => x, default: () => undefined },
-  ptbPreview: { value: (x: any) => x, default: () => undefined },
-  ptbObject: { value: (x: any) => x, default: () => undefined },
-  guardianResult: { value: (x: any) => x, default: () => undefined },
-  userConfirmed: { value: (x: boolean | undefined) => x, default: () => undefined },
-  txDigest: { value: (x: string | undefined) => x, default: () => undefined },
-  explorerUrl: { value: (x: string | undefined) => x, default: () => undefined },
-  langsmithRunUrl: { value: (x: string | undefined) => x, default: () => undefined },
-  error: { value: (x: string | undefined) => x, default: () => undefined },
-  stage: { value: (x: any) => x, default: () => 'parsing' },
+  userInput: { value: lastValue, default: () => '' },
+  sessionId: { value: lastValue, default: () => '' },
+  walletAddress: { value: lastValue, default: () => '' },
+  walletBalance: { value: lastValue, default: () => 0 },
+  intent: { value: lastValue, default: () => undefined },
+  ptbPreview: { value: lastValue, default: () => undefined },
+  ptbObject: { value: lastValue, default: () => undefined },
+  guardianResult: { value: lastValue, default: () => undefined },
+  userConfirmed: { value: lastValue, default: () => undefined },
+  txDigest: { value: lastValue, default: () => undefined },
+  explorerUrl: { value: lastValue, default: () => undefined },
+  langsmithRunUrl: { value: lastValue, default: () => undefined },
+  error: { value: lastValue, default: () => undefined },
+  stage: { value: lastValue, default: () => 'parsing' },
 };
 
 function routeAfterGuardian(state: IntentEngineState): string {

@@ -12,46 +12,73 @@ const IntentSchema = z.object({
   constraints: z.array(z.string()).optional().describe('Any user-specified constraints like max slippage.'),
 }).describe('Parsed intent from user natural language input.');
 
-const llm = new ChatGoogleGenerativeAI({
-  model: 'gemini-2.0-flash',
-  temperature: 0,
-}).withStructuredOutput(IntentSchema);
-
-export async function parseIntentNode(
-  state: IntentEngineState
-): Promise<Partial<IntentEngineState>> {
-  console.log('🔍 [Node 1] Parsing intent:', state.userInput);
-
-  try {
-    const result = await llm.invoke([
-      {
-        role: 'system',
-        content: `You are a DeFi intent parser for the Sui blockchain. 
+const SYSTEM_PROMPT = `You are a DeFi intent parser for the Sui blockchain. 
 Parse the user's natural language financial goal into a structured intent.
 Sui uses SUI as its native token. Common tokens: SUI, USDC, USDT, WETH.
 If the user says "send", "give", or "pay", that's a transfer action.
 If the user says "swap", "exchange", "convert", "trade", that's a swap.
 If the user gives a recipient address (starts with 0x and is 66 chars), set it as recipient.
 If no amount is specified for a query, use 0.
-Always extract a specific numeric amount — never leave it as 0 unless it's a balance query.`
-      },
-      { role: 'user', content: state.userInput }
+If the user asks about their balance, wallet, or holdings, that's a query_balance action.
+Always extract a specific numeric amount — never leave it as 0 unless it's a balance query.`;
+
+// Models to try in order — gemini-2.0-flash-lite has higher free-tier quotas
+const MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-1.5-pro-latest'];
+
+async function tryParseWithModel(modelName: string, userInput: string): Promise<StructuredIntent | null> {
+  try {
+    const llm = new ChatGoogleGenerativeAI({
+      model: modelName,
+      temperature: 0,
+      maxRetries: 2,
+    }).withStructuredOutput(IntentSchema);
+
+    const result = await llm.invoke([
+      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'user', content: userInput },
     ]);
 
-    const intent = result as StructuredIntent;
-    intent.raw_input = state.userInput;
+    return result as StructuredIntent;
+  } catch (e: any) {
+    console.warn(`⚠️  Model ${modelName} failed:`, e.status || e.message?.slice(0, 100));
+    return null;
+  }
+}
 
-    console.log('✅ [Node 1] Intent parsed:', JSON.stringify(intent, null, 2));
+export async function parseIntentNode(
+  state: IntentEngineState
+): Promise<Partial<IntentEngineState>> {
+  console.log('🔍 [Node 1] Parsing intent:', state.userInput);
 
+  if (!state.userInput || state.userInput.trim() === '') {
     return {
-      intent,
-      stage: 'compiling',
-    };
-  } catch (e) {
-    console.error('❌ [Node 1] Parse failed:', e);
-    return {
-      error: `Could not understand your intent. Please try: "Send 0.5 SUI to 0x..." or "Swap 10 USDC for SUI"`,
+      error: 'No input provided. Please describe what you want to do on Sui.',
       stage: 'error',
     };
   }
+
+  // Try each model in order until one succeeds
+  for (const modelName of MODELS) {
+    console.log(`   Trying model: ${modelName}...`);
+    const result = await tryParseWithModel(modelName, state.userInput);
+
+    if (result) {
+      const intent = result;
+      intent.raw_input = state.userInput;
+
+      console.log('✅ [Node 1] Intent parsed with', modelName, ':', JSON.stringify(intent, null, 2));
+
+      return {
+        intent,
+        stage: 'compiling',
+      };
+    }
+  }
+
+  // All models failed
+  console.error('❌ [Node 1] All models failed to parse intent');
+  return {
+    error: `Gemini API is temporarily rate-limited. Please wait 30 seconds and try again. If this persists, check your API key at https://aistudio.google.com/apikey`,
+    stage: 'error',
+  };
 }

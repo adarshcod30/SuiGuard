@@ -14,13 +14,24 @@ function loadOrCreateKeypair(): Ed25519Keypair {
 
   if (match && match[1] && match[1] !== '<auto_generated>') {
     try {
-      const keypair = Ed25519Keypair.fromSecretKey(
-        Buffer.from(match[1].replace('suiprivkey', ''), 'base64')
-      );
-      console.log('🔑 Loaded existing keypair. Address:', keypair.getPublicKey().toSuiAddress());
-      return keypair;
+      // Try loading as raw base64 secret key
+      const decoded = Buffer.from(match[1], 'base64');
+      // The decoded key might have a prefix (suiprivkey1...) or be raw bytes
+      // Ed25519 secret key is 32 bytes, but with prefix it could be longer
+      if (decoded.length >= 32) {
+        const keypair = Ed25519Keypair.fromSecretKey(decoded.slice(0, 32));
+        console.log('🔑 Loaded existing keypair. Address:', keypair.getPublicKey().toSuiAddress());
+        return keypair;
+      }
     } catch {
-      console.log('⚠️  Could not parse stored key, generating new one...');
+      // Try as bech32 encoded key
+      try {
+        const keypair = Ed25519Keypair.fromSecretKey(match[1]);
+        console.log('🔑 Loaded existing keypair (bech32). Address:', keypair.getPublicKey().toSuiAddress());
+        return keypair;
+      } catch {
+        console.log('⚠️  Could not parse stored key, generating new one...');
+      }
     }
   }
 
@@ -52,17 +63,29 @@ export async function fundWallet(): Promise<boolean> {
         FixedAmountRequest: { recipient: walletAddress }
       }),
     });
+
+    // Handle non-JSON responses (rate limiting returns plain text)
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      const text = await response.text();
+      if (response.status === 429 || text.includes('Too Many')) {
+        console.log('ℹ️  Faucet rate limited — try again in a few minutes or use Discord #testnet-faucet');
+      } else {
+        console.log(`ℹ️  Faucet returned non-JSON (${response.status}): ${text.slice(0, 100)}`);
+      }
+      return false;
+    }
+
     const data = await response.json() as any;
     if (data.error) {
-      // Rate limited — wallet may already have funds
       console.log('ℹ️  Faucet rate limited (wallet may already have SUI)');
       return true;
     }
     console.log('✅ Testnet SUI received!');
     await new Promise(r => setTimeout(r, 3000)); // wait for indexing
     return true;
-  } catch (e) {
-    console.error('Faucet error:', e);
+  } catch (e: any) {
+    console.error('ℹ️  Faucet unavailable:', e.message?.slice(0, 80));
     return false;
   }
 }
