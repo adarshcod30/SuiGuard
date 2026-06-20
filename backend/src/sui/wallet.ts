@@ -52,42 +52,10 @@ function loadOrCreateKeypair(): Ed25519Keypair {
 export const keypair = loadOrCreateKeypair();
 export const walletAddress = keypair.getPublicKey().toSuiAddress();
 
-// Fund wallet from testnet faucet
+// Fund wallet (Disabled for Mainnet)
 export async function fundWallet(): Promise<boolean> {
-  console.log(`💧 Requesting testnet SUI for ${walletAddress}...`);
-  try {
-    const response = await fetch('https://faucet.testnet.sui.io/v1/gas', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        FixedAmountRequest: { recipient: walletAddress }
-      }),
-    });
-
-    // Handle non-JSON responses (rate limiting returns plain text)
-    const contentType = response.headers.get('content-type') || '';
-    if (!contentType.includes('application/json')) {
-      const text = await response.text();
-      if (response.status === 429 || text.includes('Too Many')) {
-        console.log('ℹ️  Faucet rate limited — try again in a few minutes or use Discord #testnet-faucet');
-      } else {
-        console.log(`ℹ️  Faucet returned non-JSON (${response.status}): ${text.slice(0, 100)}`);
-      }
-      return false;
-    }
-
-    const data = await response.json() as any;
-    if (data.error) {
-      console.log('ℹ️  Faucet rate limited (wallet may already have SUI)');
-      return true;
-    }
-    console.log('✅ Testnet SUI received!');
-    await new Promise(r => setTimeout(r, 3000)); // wait for indexing
-    return true;
-  } catch (e: any) {
-    console.error('ℹ️  Faucet unavailable:', e.message?.slice(0, 80));
-    return false;
-  }
+  console.log(`⚠️  Faucet is disabled on Mainnet. Please send SUI to ${walletAddress} manually.`);
+  return false;
 }
 
 export async function getBalance(): Promise<number> {
@@ -104,8 +72,10 @@ export async function getBalance(): Promise<number> {
 
 // Run if executed directly: node wallet.ts
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const funded = await fundWallet();
   const balance = await getBalance();
   console.log(`💰 Wallet balance: ${balance.toFixed(4)} SUI`);
-  process.exit(funded ? 0 : 1);
+  if (balance < 0.01) {
+    console.log(`⚠️  ACTION REQUIRED: Send SUI to ${walletAddress} for execution.`);
+  }
+  process.exit(0);
 }

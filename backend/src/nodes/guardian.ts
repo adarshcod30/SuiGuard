@@ -153,7 +153,7 @@ export async function guardianNode(
           level: 'WARN',
           class: 'Unknown Recipient',
           message: 'Recipient address has no transaction history on Sui',
-          detail: 'This address exists but has never transacted on Sui testnet. Verify it is correct before sending.',
+          detail: 'This address exists but has never transacted on Sui Mainnet. Verify it is correct before sending.',
         });
       } else {
         flags.push({

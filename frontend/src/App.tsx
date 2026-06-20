@@ -28,7 +28,7 @@ export interface ExecuteResponse {
 }
 
 const SESSION_ID = `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-const API = '';
+const API = import.meta.env.VITE_API_URL || '';
 
 export default function App() {
   const [stage, setStage] = useState<AppStage>('input');
@@ -92,7 +92,7 @@ export default function App() {
     }
 
     setStage('executing');
-    setLoadingMessage('Signing and submitting to Sui testnet...');
+    setLoadingMessage('Signing and submitting to Sui mainnet...');
 
     try {
       const res = await fetch(`${API}/api/confirm`, {
@@ -146,7 +146,7 @@ export default function App() {
                   connectionStatus === 'error' ? 'bg-red-400' : 'bg-yellow-400 animate-pulse'
                 }`} />
                 <p className="text-[#8b949e] text-[10px] font-medium">
-                  {connectionStatus === 'connected' ? 'Testnet Connected' :
+                  {connectionStatus === 'connected' ? 'Mainnet Connected' :
                    connectionStatus === 'error' ? 'Backend Offline' : 'Connecting...'}
                 </p>
               </div>

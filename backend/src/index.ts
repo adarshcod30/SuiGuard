@@ -7,7 +7,7 @@ import { runPhase1, runPhase2 } from './graph.js';
 import { IntentEngineState } from './types.js';
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 // In-memory session store (keyed by sessionId)
@@ -20,7 +20,7 @@ app.get('/health', async (req, res) => {
   res.json({
     status: 'ok',
     sui: connected ? 'connected' : 'disconnected',
-    network: 'testnet',
+    network: process.env.SUI_NETWORK || 'mainnet',
     walletAddress,
     walletBalance: balance,
     langsmithProject: process.env.LANGCHAIN_PROJECT,
@@ -38,10 +38,9 @@ app.post('/api/intent', async (req, res) => {
   try {
     const balance = await getBalance();
 
-    // If balance is too low, try to fund
+    // Warn if balance is low on mainnet
     if (balance < 0.01) {
-      console.log('⚠️  Low balance, attempting faucet...');
-      await fundWallet();
+      console.log('⚠️  Low balance on Mainnet. Transactions may fail without gas.');
     }
 
     const freshBalance = await getBalance();
@@ -120,7 +119,7 @@ app.post('/api/confirm', async (req, res) => {
 // ─── Wallet info ─────────────────────────────────────────────────────────────
 app.get('/api/wallet', async (req, res) => {
   const balance = await getBalance();
-  res.json({ address: walletAddress, balance, network: 'testnet' });
+  res.json({ address: walletAddress, balance, network: process.env.SUI_NETWORK || 'mainnet' });
 });
 
 // ─── Startup ─────────────────────────────────────────────────────────────────
@@ -132,15 +131,12 @@ app.listen(PORT, async () => {
   await checkConnection();
   const balance = await getBalance();
   console.log(`  Wallet: ${walletAddress}`);
-  console.log(`  Balance: ${balance.toFixed(4)} SUI (testnet)`);
+  console.log(`  Balance: ${balance.toFixed(4)} SUI (${process.env.SUI_NETWORK || 'mainnet'})`);
   console.log(`  LangSmith: ${process.env.LANGCHAIN_PROJECT}`);
   console.log(`  Server: http://localhost:${PORT}`);
   console.log('═'.repeat(60) + '\n');
 
   if (balance < 0.01) {
-    console.log('⚠️  Low balance — requesting testnet SUI from faucet...');
-    await fundWallet();
-    const newBalance = await getBalance();
-    console.log(`✅ Balance after faucet: ${newBalance.toFixed(4)} SUI`);
+    console.log(`⚠️  ACTION REQUIRED: Send SUI to ${walletAddress} to execute mainnet transactions.`);
   }
 });

@@ -49,7 +49,7 @@ export default function LandingPage({ onLaunch }: Props) {
           <div>
             <p className="text-[10px] text-[#8b949e] uppercase tracking-widest font-bold mb-2">Network Execution</p>
             <p className="text-4xl font-bold text-white mb-1">100%</p>
-            <p className="text-xs text-[#a78bfa] font-medium">Sui Testnet Verified</p>
+            <p className="text-xs text-[#a78bfa] font-medium">Sui Mainnet Verified</p>
           </div>
           <div>
             <p className="text-[10px] text-[#8b949e] uppercase tracking-widest font-bold mb-2">User Abstraction</p>

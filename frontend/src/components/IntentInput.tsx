@@ -31,7 +31,7 @@ export default function IntentInput({ onSubmit }: Props) {
       <div className="text-center mb-16 mt-8">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[#6fbcf0] text-xs font-medium mb-10 border border-[#6fbcf0]/30">
           <span className="w-1.5 h-1.5 rounded-full bg-[#6fbcf0] status-dot" />
-          Sui Testnet · Guardian Protected
+          Sui Mainnet · Guardian Protected
         </div>
         <h2 className="text-6xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-[1.1]">
           What do you want<br />

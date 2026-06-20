@@ -1,13 +1,16 @@
+import 'dotenv/config';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 
+const network = (process.env.SUI_NETWORK as 'mainnet' | 'testnet' | 'devnet' | 'localnet') || 'mainnet';
+
 export const suiClient = new SuiClient({
-  url: getFullnodeUrl('testnet'),
+  url: getFullnodeUrl(network),
 });
 
 export async function checkConnection(): Promise<boolean> {
   try {
     const checkpoint = await suiClient.getLatestCheckpointSequenceNumber();
-    console.log('✅ Sui testnet connected. Latest checkpoint:', checkpoint);
+    console.log(`✅ Sui ${network} connected. Latest checkpoint:`, checkpoint);
     return true;
   } catch (e) {
     console.error('❌ Sui connection failed:', e);
