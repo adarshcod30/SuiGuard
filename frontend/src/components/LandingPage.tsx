@@ -165,7 +165,7 @@ export default function LandingPage({ onLaunch }: Props) {
               <h3 className="text-white font-bold mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-red-500"></span> Slippage Protection
               </h3>
-              <p className="text-sm text-[#8b949e]">Calculates trade size vs pool depth. Automatically blocks the transaction if price impact exceeds safe thresholds (>5%), preventing MEV sandwich attacks.</p>
+              <p className="text-sm text-[#8b949e]">Calculates trade size vs pool depth. Automatically blocks the transaction if price impact exceeds safe thresholds (&gt;5%), preventing MEV sandwich attacks.</p>
             </div>
             
             <div className="glass-card p-6 rounded-2xl border border-[#30363d] hover:border-[#a78bfa]/50 transition-colors">
@@ -179,7 +179,7 @@ export default function LandingPage({ onLaunch }: Props) {
               <h3 className="text-white font-bold mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#6fbcf0]"></span> Balance Utilization
               </h3>
-              <p className="text-sm text-[#8b949e]">Simulates gas fees alongside the trade amount. Warns the user if the transaction will drain >80% of their wallet, preventing "stuck" accounts.</p>
+              <p className="text-sm text-[#8b949e]">Simulates gas fees alongside the trade amount. Warns the user if the transaction will drain &gt;80% of their wallet, preventing "stuck" accounts.</p>
             </div>
             
             <div className="glass-card p-6 rounded-2xl border border-[#30363d] hover:border-[#a78bfa]/50 transition-colors">
