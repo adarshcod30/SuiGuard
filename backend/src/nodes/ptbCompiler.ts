@@ -2,8 +2,8 @@ import { Transaction } from '@mysten/sui/transactions';
 import { suiClient } from '../sui/client.js';
 import { IntentEngineState, PTBPreview } from '../types.js';
 
-// Known mainnet DEX package IDs (Cetus Router on mainnet)
-const CETUS_MAINNET = '0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb';
+// Known testnet DEX package IDs (Cetus Clob on testnet)
+const CETUS_TESTNET = '0x0c7ae833c220aa73a3643a0d508afa4ac5d50d97312ea4b3d57fee4d96c3ca8c';
 
 export async function compilePTBNode(
   state: IntentEngineState
@@ -46,9 +46,9 @@ export async function compilePTBNode(
       const amountMist = BigInt(Math.floor(intent.amount * 1_000_000_000));
       const [coin] = tx.splitCoins(tx.gas, [amountMist]);
 
-      // Move call to a mainnet pool (mock — shows PTB capability)
+      // Move call to a testnet pool (mock — shows PTB capability)
       tx.moveCall({
-        target: `${CETUS_MAINNET}::router::swap`,
+        target: `${CETUS_TESTNET}::router::swap`,
         arguments: [coin, tx.pure.u64(amountMist), tx.pure.u64(BigInt(0))],
         typeArguments: [
           `0x2::sui::SUI`,
@@ -57,7 +57,7 @@ export async function compilePTBNode(
       });
 
       steps.push(`① Approve ${intent.amount} ${intent.token_in} for swap`);
-      steps.push(`② Route through best available mainnet liquidity pool`);
+      steps.push(`② Route through best available testnet liquidity pool`);
       steps.push(`③ Receive ${intent.token_out || 'target token'} to your wallet`);
       steps.push(`④ Unspent input refunded atomically`);
 
@@ -92,7 +92,7 @@ export async function compilePTBNode(
           { TransferObjects: [ [ 'Result(0)' ], intent.recipient ] }
         ] : [
           { SplitCoins: [ 'GasCoin', [ amountMistStr ] ] },
-          { MoveCall: { package: CETUS_MAINNET, module: 'router', function: 'swap', arguments: ['Result(0)', amountMistStr, '0'] } }
+          { MoveCall: { package: CETUS_TESTNET, module: 'router', function: 'swap', arguments: ['Result(0)', amountMistStr, '0'] } }
         ]
       } : null,
     };

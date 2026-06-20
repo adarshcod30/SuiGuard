@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 
-const network = (process.env.SUI_NETWORK as 'mainnet' | 'testnet' | 'devnet' | 'localnet') || 'mainnet';
+const network = (process.env.SUI_NETWORK as 'mainnet' | 'testnet' | 'devnet' | 'localnet') || 'testnet';
 
 export const suiClient = new SuiClient({
   url: getFullnodeUrl(network),
