@@ -20,7 +20,7 @@
 
 The user types what they want in **plain English**. SuiGuard:
 
-1. **Parses** their intent using GPT-4o-mini into a structured action
+1. **Parses** their intent using Google Gemini into a structured action
 2. **Compiles** a Sui Programmable Transaction Block (PTB)
 3. **Runs a 5-layer Guardian risk analysis** that catches slippage, stale oracle data, balance overreach, address validity, and large-trade concentration risk
 4. **Shows a plain-English preview** of exactly what will happen
@@ -49,7 +49,7 @@ This architectural property enables:
 ┌──────────────┐     ┌─────────────────────────────────────────────┐
 │   Frontend   │────▶│              LangGraph Pipeline             │
 │  React/Vite  │     │                                             │
-│              │     │  ① Intent Parser (GPT-4o-mini)              │
+│              │     │  ① Intent Parser (Gemini)                   │
 │  Plain       │     │       ↓                                     │
 │  English     │     │  ② PTB Compiler (Sui Transaction Builder)   │
 │  Input       │     │       ↓                                     │
@@ -84,7 +84,7 @@ This architectural property enables:
 ### Prerequisites
 
 - Node.js 18+
-- An OpenAI API key (GPT-4o-mini)
+- A Google Gemini API key (free tier, e.g. gemini-2.0-flash)
 - A LangChain/LangSmith API key (free at [smith.langchain.com](https://smith.langchain.com))
 
 ### 1. Clone & Install
@@ -108,7 +108,7 @@ npm install
 Edit `backend/.env`:
 
 ```env
-OPENAI_API_KEY=sk-your-key-here
+GOOGLE_API_KEY=your-gemini-key-here
 LANGCHAIN_API_KEY=lsv2_your-key-here
 LANGCHAIN_TRACING_V2=true
 LANGCHAIN_PROJECT=suiguard-intent-engine
@@ -178,7 +178,7 @@ suiguard/
 │   │   ├── types.ts           # TypeScript type definitions
 │   │   ├── graph.ts           # LangGraph state machine
 │   │   ├── nodes/
-│   │   │   ├── intentParser.ts  # GPT-4o-mini intent extraction
+│   │   │   ├── intentParser.ts  # Gemini intent extraction
 │   │   │   ├── ptbCompiler.ts   # Sui PTB builder
 │   │   │   ├── guardian.ts      # 5-layer risk analysis
 │   │   │   └── executor.ts     # Transaction signer + submitter
@@ -228,7 +228,7 @@ SuiGuard is exactly this:
 
 ## 🛠️ Tech Stack
 
-- **LLM**: GPT-4o-mini (via LangChain)
+- **LLM**: Gemini 2.0 Flash (via LangChain Google GenAI)
 - **Agent Framework**: LangGraph (state machine with conditional edges)
 - **Blockchain**: Sui (testnet) with @mysten/sui SDK
 - **Backend**: Express.js + TypeScript

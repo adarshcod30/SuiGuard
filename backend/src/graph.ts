@@ -45,7 +45,7 @@ export async function runPhase1(input: {
   walletAddress: string;
   walletBalance: number;
 }): Promise<IntentEngineState> {
-  const graph = new StateGraph<IntentEngineState>({ channels } as any);
+  const graph: any = new StateGraph<IntentEngineState>({ channels } as any);
 
   graph.addNode('parse_intent', parseIntentNode as any);
   graph.addNode('compile_ptb', compilePTBNode as any);
@@ -81,7 +81,7 @@ export async function runPhase1(input: {
 
 // Phase 2: Execute after user confirmation
 export async function runPhase2(state: IntentEngineState): Promise<IntentEngineState> {
-  const graph = new StateGraph<IntentEngineState>({ channels } as any);
+  const graph: any = new StateGraph<IntentEngineState>({ channels } as any);
 
   graph.addNode('execute', executorNode as any);
   graph.addNode('error_end', async (s: IntentEngineState) => ({ ...s, stage: 'error' }));

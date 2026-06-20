@@ -6,7 +6,7 @@ async function checkOracleFreshness(): Promise<{ minutesOld: number; isStale: bo
   try {
     const epoch = await suiClient.getCurrentEpoch();
     // Each Sui epoch is ~24 hours; for demo we simulate intra-epoch staleness
-    const epochStartMs = Number(epoch.epochStartTimestampMs);
+    const epochStartMs = Number(epoch.epochStartTimestamp || (epoch as any).epochStartTimestampMs);
     const minutesSinceEpoch = (Date.now() - epochStartMs) / 60000;
 
     // Simulate pool last update: random 0–20 minutes within epoch

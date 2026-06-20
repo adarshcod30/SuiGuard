@@ -1,4 +1,4 @@
-import { ChatOpenAI } from '@langchain/openai';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { z } from 'zod';
 import { IntentEngineState, StructuredIntent } from '../types.js';
 
@@ -12,8 +12,8 @@ const IntentSchema = z.object({
   constraints: z.array(z.string()).optional().describe('Any user-specified constraints like max slippage.'),
 }).describe('Parsed intent from user natural language input.');
 
-const llm = new ChatOpenAI({
-  model: 'gpt-4o-mini',
+const llm = new ChatGoogleGenerativeAI({
+  model: 'gemini-2.0-flash',
   temperature: 0,
 }).withStructuredOutput(IntentSchema);
 
