@@ -219,18 +219,18 @@ export default function GuardianReview({ data, onConfirm }: Props) {
             
             {/* Raw Intent */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="glass-card rounded-2xl p-5">
+              <div className="glass-card rounded-2xl p-5 min-w-0">
                 <p className="text-[10px] text-[#8b949e] uppercase tracking-widest font-bold mb-3">Extracted Intent</p>
-                <pre className="text-xs font-mono text-[#a78bfa] bg-[#0d1117] p-3 rounded-lg border border-[#30363d]/50">
+                <pre className="text-xs font-mono text-[#a78bfa] bg-[#0d1117] p-3 rounded-lg border border-[#30363d]/50 overflow-x-auto">
                   {JSON.stringify(intent, null, 2)}
                 </pre>
               </div>
-              <div className="glass-card rounded-2xl p-5">
+              <div className="glass-card rounded-2xl p-5 min-w-0">
                 <p className="text-[10px] text-[#8b949e] uppercase tracking-widest font-bold mb-3">Execution Context</p>
                 <div className="space-y-3">
                   <div>
                     <p className="text-[10px] text-[#4b5563]">Sender</p>
-                    <p className="text-xs text-[#6fbcf0] font-mono">{walletAddress}</p>
+                    <p className="text-xs text-[#6fbcf0] font-mono break-all">{walletAddress}</p>
                   </div>
                   <div>
                     <p className="text-[10px] text-[#4b5563]">Gas Budget</p>
