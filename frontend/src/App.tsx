@@ -25,7 +25,8 @@ export interface ExecuteResponse {
   txDigest?: string;
   explorerUrl?: string;
   error?: string;
-  langsmithUrl: string;
+  langsmithUrl?: string;
+  backendTrace?: string[];
 }
 
 const SESSION_ID = `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;

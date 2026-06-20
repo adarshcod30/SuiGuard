@@ -110,6 +110,7 @@ app.post('/api/confirm', async (req, res) => {
       txDigest: finalState.txDigest,
       explorerUrl: finalState.explorerUrl,
       error: finalState.error,
+      backendTrace: finalState.backendTrace,
       langsmithUrl,
     });
   } catch (e: any) {
