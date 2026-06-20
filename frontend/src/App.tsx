@@ -3,6 +3,7 @@ import IntentInput from './components/IntentInput';
 import GuardianReview from './components/GuardianReview';
 import SuccessScreen from './components/SuccessScreen';
 import LoadingState from './components/LoadingState';
+import LandingPage from './components/LandingPage';
 
 export type AppStage = 'input' | 'loading' | 'review' | 'executing' | 'success' | 'error';
 
@@ -37,6 +38,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [walletInfo, setWalletInfo] = useState<{ address: string; balance: number } | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     fetch(`${API}/api/wallet`)
@@ -121,6 +123,10 @@ export default function App() {
     setError(null);
   };
 
+    if (showLanding) {
+      return <LandingPage onLaunch={() => setShowLanding(false)} />;
+    }
+
   return (
     <div className="min-h-screen bg-[#0a0e17] text-white bg-grid hero-gradient">
       {/* ─── Header ─── */}
@@ -129,7 +135,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#6fbcf0] to-[#a78bfa] p-[1px]">
               <div className="w-full h-full rounded-xl bg-[#0d1117] flex items-center justify-center">
-                <span className="text-[#6fbcf0] text-sm font-bold">🛡️</span>
+                <div className="w-2.5 h-2.5 rounded-sm bg-[#6fbcf0]"></div>
               </div>
             </div>
             <div>
@@ -157,7 +163,7 @@ export default function App() {
                 </p>
               </div>
               <div className="w-8 h-8 rounded-lg bg-[#161b22] border border-[#30363d] flex items-center justify-center">
-                <span className="text-xs">💰</span>
+                <svg className="w-4 h-4 text-[#8b949e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
               </div>
             </div>
           )}
@@ -188,7 +194,7 @@ export default function App() {
         {stage === 'error' && (
           <div className="text-center animate-fade-in-up max-w-md mx-auto">
             <div className="w-20 h-20 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6 glow-red">
-              <span className="text-4xl">⚠️</span>
+              <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
             <h2 className="text-xl font-bold text-white mb-3">Something went wrong</h2>
             <p className="text-[#8b949e] mb-8 text-sm leading-relaxed">{error}</p>
@@ -206,7 +212,7 @@ export default function App() {
       <footer className="border-t border-[#30363d]/50 px-6 py-5 mt-auto">
         <div className="max-w-4xl mx-auto flex items-center justify-between text-[10px] text-[#8b949e]">
           <div className="flex items-center gap-2">
-            <span className="text-[#6fbcf0]">🛡️</span>
+            <span className="w-2 h-2 rounded-full bg-[#6fbcf0]"></span>
             <span>Built for Sui Overflow 2026 · Agentic Web Track</span>
           </div>
           <div className="flex items-center gap-4">

@@ -1,85 +1,150 @@
-# SuiGuard — Intent Engine for Safe DeFi on Sui
+<div align="center">
+  <h1>🛡️ SuiGuard</h1>
+  <p><b>The Brain Of Web3 Intents</b></p>
+  <p><i>An AI-powered operating system for Web3 that safely parses plain English goals, compiles them into raw Sui Programmable Transaction Blocks, and performs deep risk analysis before execution.</i></p>
 
-> **Sui Overflow 2026 · Agentic Web Track · Sub-track 3: Intent Engine**
+  <br />
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Sui](https://img.shields.io/badge/Sui-Testnet-6fbcf0)
-![LangGraph](https://img.shields.io/badge/LangGraph-Agentic-green)
-
----
-
-## 🛡️ What is SuiGuard?
-
-**SuiGuard** is an intent engine that makes DeFi on Sui safe and accessible for everyone — especially first-time users in emerging markets who lose money daily to three invisible dangers:
-
-1. **Slippage they never calculated** — users accept defaults and lose value
-2. **Stale price data** — pools serve outdated rates during volatile periods with no warning
-3. **Unreadable transactions** — users sign hex blobs they cannot understand
-
-### How SuiGuard Fixes This
-
-The user types what they want in **plain English**. SuiGuard:
-
-1. **Parses** their intent using Amazon Nova (AWS Bedrock) into a structured action
-2. **Compiles** a Sui Programmable Transaction Block (PTB)
-3. **Runs a 5-layer Guardian risk analysis** that catches slippage, stale oracle data, balance overreach, address validity, and large-trade concentration risk
-4. **Shows a plain-English preview** of exactly what will happen
-5. **Requires explicit confirmation** before a single byte goes to the blockchain
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Sui](https://img.shields.io/badge/Sui-Testnet-6fbcf0?style=for-the-badge&logo=sui&logoColor=white)](https://sui.io/)
+  [![React](https://img.shields.io/badge/React-18-000000?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+  [![AWS Bedrock](https://img.shields.io/badge/AWS_Bedrock-Amazon_Nova-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](https://aws.amazon.com/bedrock/)
+  [![LangGraph.js](https://img.shields.io/badge/LangGraph.js-Orchestration-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraphjs/)
+</div>
 
 ---
 
-## 🏗️ Why Sui? (Critical Architectural Advantage)
+<br />
 
-**Sui's Programmable Transaction Blocks (PTBs) are a unique primitive** — they allow chaining N operations into a single atomic transaction. This is what makes the guardian check and execution **trustless**:
+> 📸 **Dual Mode Guardian Review:** The system abstracts jargon for beginners while preserving deep payload verification for experts.
 
-> The Guardian analyses the **SAME PTB** that gets executed. No re-construction, no bait-and-switch between preview and execution. No other L1 has this.
+## Table of Contents
 
-On Ethereum, a preview of "swap USDC → ETH" is just a *promise* — the actual transaction could do something entirely different. On Sui, the PTB **is** the transaction. What you see in the Guardian review is exactly what gets signed and submitted.
-
-This architectural property enables:
-- **Atomic composition**: Split coins + transfer + swap in one transaction
-- **Same-object guarantee**: The PTB previewed = the PTB executed
-- **Gas efficiency**: One signature, one execution, one fee
+- [The Problem — Why This Exists](#the-problem--why-this-exists)
+- [What SuiGuard Does — Solution Overview](#what-suiguard-does--solution-overview)
+- [Key Features — Full Feature List](#key-features--full-feature-list)
+- [Architecture — Full System Architecture](#architecture--full-system-architecture)
+- [The Dual Mode UX](#the-dual-mode-ux)
+- [Setup & Installation](#setup--installation)
 
 ---
 
-## 🧠 Architecture
+## The Problem — Why This Exists
+
+Imagine you are a first-time DeFi user in an emerging market trying to execute a trade. Today's Web3 wallets force you to accept default slippage parameters, sign opaque hex blobs you don't understand, and blindly trust that the decentralized exchange routing your trade isn't utilizing stale oracle data. 
+
+**By the time a user realizes they've suffered from severe price impact or interacting with a malicious contract, their capital is already gone.**
+
+The value loss is silent, continuous, and devastating. 
+
+> **The Critical Gap:** No existing Web3 wallet combines natural language intent parsing with deep, pre-flight statistical risk modelling. SuiGuard unifies these capabilities into an AI-orchestrated system that runs continuously, surfacing critical dangers (like high slippage or unverified recipients) in plain English before a single byte touches the blockchain.
+
+---
+
+## What SuiGuard Does — Solution Overview
+
+SuiGuard is an autonomous AI agent system. It is not just a UI wrapper; it is an active participant in your Web3 transaction lifecycle that reasons about what you want to achieve, generates the code to do it, and acts as a security firewall.
+
+1. **Ingests Intent:** Parses ambiguous natural language like "Swap 5 SUI for USDC" via Amazon Nova (AWS Bedrock).
+2. **Compiles Payload:** Constructs a true Sui Programmable Transaction Block (PTB), linking multiple on-chain operations atomically.
+3. **Detects Risk:** Simulates the PTB against 5 rigorous checks (Slippage, Balance, Oracle Staleness, Transaction Size, Address Validity).
+4. **Synthesizes & Explains:** Translates complex technical risks into a human-readable "Story Mode" (Traffic lights, "You Give -> You Get").
+5. **Requires Human Approval:** Halts the pipeline completely, demanding the user click "Sign & Execute" only after reviewing the Guardian flags.
+6. **Maintains Transparency:** Provides an "Expert Mode" where crypto-natives can inspect the raw serialized JSON PTB payload before signing.
+
+---
+
+## Key Features — Full Feature List
+
+### 1. 3-Node LangGraph.js Pipeline
+The core of SuiGuard is a stateful multi-agent pipeline: `Parser → Compiler → Guardian`. Each node has a single, testable responsibility. LangGraph.js manages a persistent, typed state object that flows through every node.
+
+### 2. Amazon Nova Reasoning (AWS Bedrock)
+The system leverages Amazon Nova Lite to reliably extract structured intent data (Action, Amount, Token In, Token Out, Recipient) from unstructured, messy user input.
+
+### 3. Native Sui PTB Compilation
+Unlike Ethereum "intents" which rely on centralized solvers or off-chain promises, SuiGuard compiles actual **Sui Programmable Transaction Blocks**. The Guardian analyzes the exact payload that will be signed, guaranteeing zero deviation between the preview and the execution.
+
+### 4. 5-Layer Guardian Risk Engine
+Uses statistical boundaries to detect:
+* **High Slippage:** Detects if the trade amount is too large for the simulated pool depth.
+* **Stale Oracles:** Detects if the liquidity pool hasn't synced within a safe time window.
+* **Balance Overreach:** Prevents transactions that would leave the user without gas for future actions.
+
+### 5. Dual Mode UX
+The platform features an interactive toggle separating beginner usability from expert transparency:
+* **Story Mode:** Focuses on "You Give", "You Get", and clear text (No mention of PTBs or Liquidity Pools).
+* **Expert Mode:** Exposes the raw execution context and a syntax-highlighted `Serialized_TransactionBlock.json`.
+
+---
+
+## 🧠 Core System Architecture
+
+The **SuiGuard** platform is designed as a highly cohesive, concurrently executing web application built for the Sui Overflow hackathon.
+
+```mermaid
+flowchart TB
+
+%% ── STYLES ─────────────────────────
+classDef main fill:#0f172a,stroke:#6fbcf0,color:#f8fafc,stroke-width:2px
+classDef core fill:#0d1117,stroke:#a78bfa,color:#eff6ff,stroke-width:2px
+classDef infra fill:#161b22,stroke:#3fb950,color:#ecfdf5,stroke-width:2px
+classDef hitl fill:#7c2d12,stroke:#fb923c,color:#fff7ed,stroke-width:2px
+
+%% ── TOP LAYER ──────────────────────
+User["👤 Web3 User"]:::main
+
+subgraph App["🖥️ Application Layer (React)"]
+    direction LR
+    UI["Dual Mode UX (Story / Expert)"]
+    API["API Routes (Intent, Confirm)"]
+end
+class App main
+
+%% ── CORE SYSTEM ────────────────────
+subgraph Core["🧠 AI System (LangGraph)"]
+    direction TB
+    A1["Intent Parser (Amazon Nova)"]
+    A2["PTB Compiler (Sui SDK)"]
+    A3["Guardian Risk Engine"]
+    A4["Executor"]
+end
+class Core core
+
+%% ── INFRASTRUCTURE ─────────────────
+subgraph Infra["☁️ Infrastructure"]
+    direction LR
+    LLM["🤖 AWS Bedrock"]
+    SUI["💧 Sui Testnet RPC"]
+end
+class Infra infra
+
+%% ── HUMAN LOOP ─────────────────────
+subgraph HITL["👤 Human-in-the-Loop"]
+    direction TB
+    H1["Guardian Review"]
+    H2["Approve / Block"]
+end
+class HITL hitl
+
+%% ── FLOW ───────────────────────────
+User --> UI --> API --> A1
+
+A1 --> A2 --> A3 --> H1
+H1 --> H2
+H2 --> |If Approved| A4
+
+%% infra connections
+A1 --> LLM
+A2 --> SUI
+A3 --> SUI
+A4 --> SUI
 
 ```
-┌──────────────┐     ┌─────────────────────────────────────────────┐
-│   Frontend   │────▶│              LangGraph Pipeline             │
-│  React/Vite  │     │                                             │
-│              │     │  ① Intent Parser (Amazon Nova)               │
-│  Plain       │     │       ↓                                     │
-│  English     │     │  ② PTB Compiler (Sui Transaction Builder)   │
-│  Input       │     │       ↓                                     │
-│              │     │  ③ Guardian (5-Layer Risk Analysis)          │
-│  Guardian    │◀────│       ↓                                     │
-│  Review      │     │  ④ Human Confirmation (API boundary)        │
-│              │     │       ↓                                     │
-│  Success     │◀────│  ⑤ Executor (signAndExecuteTransaction)     │
-└──────────────┘     └─────────────────────────────────────────────┘
-                                        │
-                                        ▼
-                              ┌──────────────────┐
-                              │   Sui Testnet    │
-                              │   Blockchain     │
-                              └──────────────────┘
-```
-
-### Guardian Risk Checks
-
-| # | Check | What it catches |
-|---|-------|----------------|
-| 1 | **Slippage Analysis** | Large trades in shallow pools that would lose >1-5% to price impact |
-| 2 | **Stale Oracle Detection** | Pool price data older than 5-15 minutes during volatile periods |
-| 3 | **Balance Utilization** | Transactions that would use >80% of wallet balance or exceed it |
-| 4 | **Recipient Validation** | Invalid address formats or addresses with no on-chain history |
-| 5 | **Transaction Size** | Unusually large trades that should be split for safety |
 
 ---
 
-## 🚀 Quick Start
+## Setup & Installation
 
 ### Prerequisites
 
@@ -96,7 +161,7 @@ cd SuiGuard
 # Backend
 cd backend
 npm install
-cp .env .env.local  # Edit with your API keys
+cp .env .env.local
 
 # Frontend
 cd ../frontend
@@ -122,12 +187,9 @@ cd backend
 npm run setup-wallet
 ```
 
-This will:
-- Generate an Ed25519 keypair
-- Save the private key to `.env`
-- Request testnet SUI from the faucet
+This will automatically generate a Sui Keypair and request testnet tokens from the faucet.
 
-### 4. Run
+### 4. Run the Stack
 
 ```bash
 # Terminal 1 — Backend
@@ -139,108 +201,4 @@ cd frontend
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173)
-
----
-
-## 💬 Example Intents
-
-| Input | Action |
-|-------|--------|
-| "Send 0.5 SUI to 0xabc..." | Transfer SUI to address |
-| "Swap 10 SUI for USDC" | DEX swap with slippage check |
-| "What is my balance?" | Read-only balance query |
-| "Transfer 1 SUI to 0xdef..." | Transfer with recipient validation |
-
----
-
-## 🔍 LangSmith Tracing
-
-Every intent runs through LangGraph with full tracing on LangSmith:
-
-- View the exact LLM prompts and parsed outputs
-- See each node's execution time
-- Debug guardian risk flag logic
-- Monitor token usage and costs
-
-Access your traces at: `https://smith.langchain.com/projects/p/suiguard-intent-engine`
-
----
-
-## 📁 Project Structure
-
-```
-suiguard/
-├── backend/
-│   ├── src/
-│   │   ├── index.ts           # Express API server
-│   │   ├── types.ts           # TypeScript type definitions
-│   │   ├── graph.ts           # LangGraph state machine
-│   │   ├── nodes/
-│   │   │   ├── intentParser.ts  # Amazon Nova intent extraction
-│   │   │   ├── ptbCompiler.ts   # Sui PTB builder
-│   │   │   ├── guardian.ts      # 5-layer risk analysis
-│   │   │   └── executor.ts     # Transaction signer + submitter
-│   │   └── sui/
-│   │       ├── client.ts       # Sui testnet client
-│   │       └── wallet.ts       # Keypair management + faucet
-│   ├── package.json
-│   └── .env
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx             # Main app with stage routing
-│   │   ├── components/
-│   │   │   ├── IntentInput.tsx   # Natural language input
-│   │   │   ├── GuardianReview.tsx # Risk analysis display
-│   │   │   ├── SuccessScreen.tsx  # Transaction result
-│   │   │   └── LoadingState.tsx   # Pipeline progress
-│   │   └── index.css           # Tailwind + custom styles
-│   ├── index.html
-│   └── vite.config.ts
-└── README.md
-```
-
----
-
-## 🏆 Hackathon Track Alignment
-
-### Agentic Web — Intent Engine (Sub-track 3)
-
-> *"Build interfaces where users express goals in natural language and an agent handles the rest."*
-
-SuiGuard is exactly this:
-- **Natural language → Structured intent** (LLM parsing)
-- **Intent → Executable transaction** (PTB compilation)
-- **Safety-first execution** (Guardian risk analysis)
-- **Human-in-the-loop** (explicit confirmation required)
-
-### Judging Criteria Coverage
-
-| Criteria (Weight) | How SuiGuard Addresses It |
-|-------------------|--------------------------|
-| **Real-World Application (50%)** | Solves actual DeFi user loss from slippage, stale data, and unreadable transactions. Targets emerging market users who are most vulnerable. |
-| **Technical Implementation (20%)** | LangGraph state machine, Sui PTB compilation, 5-layer risk engine, LangSmith tracing, real testnet execution |
-| **Product & UX (20%)** | Plain English input, visual risk scoring, step-by-step PTB preview, one-click confirmation |
-| **Presentation & Vision (10%)** | Clear README, architecture diagrams, demo-ready with testnet transactions |
-
----
-
-## 🛠️ Tech Stack
-
-- **LLM**: Amazon Nova Lite (via AWS Bedrock + LangChain)
-- **Agent Framework**: LangGraph (state machine with conditional edges)
-- **Blockchain**: Sui (testnet) with @mysten/sui SDK
-- **Backend**: Express.js + TypeScript
-- **Frontend**: React + Vite + Tailwind CSS
-- **Observability**: LangSmith tracing
-- **Key Management**: Auto-generated Ed25519 keypair
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-**Built with 🛡️ for Sui Overflow 2026**
+Open [http://localhost:5173](http://localhost:5173).

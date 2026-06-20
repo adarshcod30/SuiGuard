@@ -124,8 +124,8 @@ function SimplifiedRisk({ result }: { result: any }) {
     <div className={`glass-card rounded-2xl p-6 border ${!passed ? 'glow-red border-red-500/40' : isWarn ? 'glow-yellow border-yellow-500/40' : 'glow-green border-green-500/40'}`}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${stateBg}`}>
-            {!passed ? '🛡️' : isWarn ? '⚠️' : '✅'}
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black ${stateBg}`}>
+            {!passed ? '✕' : isWarn ? '!' : '✓'}
           </div>
           <div>
             <h3 className="text-lg font-bold text-white">Guardian Safety Check</h3>
@@ -139,8 +139,8 @@ function SimplifiedRisk({ result }: { result: any }) {
       <div className="space-y-3">
         {result?.flags.map((f: any, i: number) => (
           <div key={i} className="flex items-start gap-3 bg-[#0d1117]/60 p-3 rounded-xl border border-[#30363d]/30">
-            <div className="mt-0.5">
-              {f.level === 'BLOCK' ? '🔴' : f.level === 'WARN' ? '🟡' : '🟢'}
+            <div className="mt-0.5 text-xs font-black">
+              {f.level === 'BLOCK' ? '✕' : f.level === 'WARN' ? '!' : '✓'}
             </div>
             <div>
               <p className="text-sm text-white font-medium">{f.message}</p>
@@ -188,7 +188,7 @@ export default function GuardianReview({ data, onConfirm }: Props) {
       
       {/* ─── HEADER & TOGGLE ─── */}
       <div className="flex flex-col items-center mb-8">
-        <h2 className="text-2xl font-bold text-white mb-6">🛡️ Guardian Review</h2>
+        <h2 className="text-4xl font-extrabold text-white mb-8 tracking-tight">Guardian Review</h2>
         
         <div className="toggle-switch">
           <div className={`toggle-slider ${mode === 'expert' ? 'right' : ''}`}></div>
@@ -282,7 +282,9 @@ export default function GuardianReview({ data, onConfirm }: Props) {
       <div className="pt-4 space-y-4">
         <div className="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="w-8 h-8 rounded-lg bg-[#161b22] border border-[#30363d] flex items-center justify-center text-xs">💰</div>
+            <div className="w-8 h-8 rounded-lg bg-[#161b22] border border-[#30363d] flex items-center justify-center text-[#8b949e]">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+            </div>
             <div>
               <p className="text-[9px] text-[#4b5563] uppercase tracking-widest font-semibold">Wallet Balance</p>
               <p className="text-white text-xs font-mono">{walletBalance.toFixed(4)} SUI</p>
