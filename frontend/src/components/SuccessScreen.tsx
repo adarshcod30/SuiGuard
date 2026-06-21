@@ -1,14 +1,16 @@
 import React from 'react';
-import { ExecuteResponse } from '../App';
+import { ExecuteResponse, IntentResponse } from '../App';
 import BackendTerminal from './BackendTerminal';
+import AuditTrail from './AuditTrail';
 
 interface Props {
   data: ExecuteResponse;
   intent: any;
+  intentResponse: IntentResponse | null;
   onReset: () => void;
 }
 
-export default function SuccessScreen({ data, intent, onReset }: Props) {
+export default function SuccessScreen({ data, intent, intentResponse, onReset }: Props) {
   const isBalanceQuery = data.txDigest === 'NO_TX_BALANCE_QUERY';
 
   return (
@@ -86,11 +88,23 @@ export default function SuccessScreen({ data, intent, onReset }: Props) {
         </button>
       </div>
 
+      {/* ─── AUDIT TRAIL ─── */}
+      {intentResponse && (
+        <AuditTrail
+          intent={intentResponse.intent}
+          guardianResult={intentResponse.guardianResult}
+          ptbPreview={intentResponse.ptbPreview}
+          backendTrace={intentResponse.backendTrace}
+          txDigest={data.txDigest}
+          explorerUrl={data.explorerUrl}
+        />
+      )}
+
       {/* Verify Backend Execution */}
       {data.langsmithUrl && (
         <div 
           onClick={() => window.open(data.langsmithUrl, '_blank')}
-          className="mt-12 glass-card rounded-2xl p-6 border border-[#a78bfa]/30 hover:border-[#a78bfa]/60 transition-all cursor-pointer glow-purple text-left group mx-auto max-w-lg"
+          className="mt-10 glass-card rounded-2xl p-6 border border-[#a78bfa]/30 hover:border-[#a78bfa]/60 transition-all cursor-pointer glow-purple text-left group mx-auto max-w-lg"
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-[#a78bfa]/10 flex items-center justify-center text-[#a78bfa] shrink-0">

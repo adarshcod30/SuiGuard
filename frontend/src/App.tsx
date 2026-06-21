@@ -94,7 +94,7 @@ export default function App() {
     }
 
     setStage('executing');
-    setLoadingMessage('Signing and submitting to Sui mainnet...');
+    setLoadingMessage('Signing and submitting to Sui testnet...');
 
     try {
       const res = await fetch(`${API}/api/confirm`, {
@@ -148,7 +148,7 @@ export default function App() {
                   connectionStatus === 'error' ? 'bg-red-400' : 'bg-yellow-400 animate-pulse'
                 }`} />
                 <p className="text-[#8b949e] text-[10px] font-medium">
-                  {connectionStatus === 'connected' ? 'Mainnet Connected' :
+                  {connectionStatus === 'connected' ? 'Testnet Connected' :
                    connectionStatus === 'error' ? 'Backend Offline' : 'Connecting...'}
                 </p>
               </div>
@@ -190,6 +190,7 @@ export default function App() {
           <SuccessScreen
             data={executeResponse}
             intent={intentResponse?.intent}
+            intentResponse={intentResponse}
             onReset={handleReset}
           />
         )}

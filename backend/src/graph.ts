@@ -6,9 +6,6 @@ import { guardianNode } from './nodes/guardian.js';
 import { executorNode } from './nodes/executor.js';
 
 // Channel definitions for LangGraph state
-// The value reducer takes (oldVal, newVal) and returns the merged result.
-// We use a "last writer wins" strategy but preserve existing values when
-// a node doesn't return that field (newVal is undefined).
 const lastValue = (oldVal: any, newVal: any) => newVal !== undefined ? newVal : oldVal;
 
 const channels = {
@@ -32,22 +29,16 @@ const channels = {
   },
 };
 
-function routeAfterGuardian(state: IntentEngineState): string {
-  if (state.stage === 'error') return 'error_end';
-  return 'await_confirmation';
-}
-
-function routeAfterParsing(state: IntentEngineState): string {
-  if (state.stage === 'error') return 'error_end';
-  return 'compile_ptb';
-}
-
-function routeAfterCompiling(state: IntentEngineState): string {
-  if (state.stage === 'error') return 'error_end';
-  return 'guardian';
+// Wrapper: skip node if pipeline already errored
+function skipOnError(nodeFn: (s: IntentEngineState) => Promise<Partial<IntentEngineState>>) {
+  return async (state: IntentEngineState): Promise<Partial<IntentEngineState>> => {
+    if (state.stage === 'error') return {}; // pass-through, don't run
+    return nodeFn(state);
+  };
 }
 
 // Phase 1: Parse intent → Compile PTB → Guardian check → Return to API
+// Uses simple linear edges. Each node checks for errors via skipOnError wrapper.
 export async function runPhase1(input: {
   userInput: string;
   sessionId: string;
@@ -56,27 +47,15 @@ export async function runPhase1(input: {
 }): Promise<IntentEngineState> {
   const graph: any = new StateGraph<IntentEngineState>({ channels } as any);
 
-  graph.addNode('parse_intent', parseIntentNode as any);
-  graph.addNode('compile_ptb', compilePTBNode as any);
-  graph.addNode('guardian', guardianNode as any);
-  graph.addNode('error_end', async (s: IntentEngineState) => ({ ...s, stage: 'error' }));
-  graph.addNode('done', async (s: IntentEngineState) => ({ ...s }));
+  graph.addNode('parse_intent', skipOnError(parseIntentNode) as any);
+  graph.addNode('compile_ptb', skipOnError(compilePTBNode) as any);
+  graph.addNode('guardian', skipOnError(guardianNode) as any);
 
+  // Simple linear flow — no conditional edges, no unreachable nodes
   graph.addEdge(START, 'parse_intent');
-  graph.addConditionalEdges('parse_intent', routeAfterParsing as any, {
-    compile_ptb: 'compile_ptb',
-    error_end: 'error_end',
-  });
-  graph.addConditionalEdges('compile_ptb', routeAfterCompiling as any, {
-    guardian: 'guardian',
-    error_end: 'error_end',
-  });
-  graph.addConditionalEdges('guardian', routeAfterGuardian as any, {
-    await_confirmation: 'done',
-    error_end: 'error_end',
-  });
-  graph.addEdge('done', END);
-  graph.addEdge('error_end', END);
+  graph.addEdge('parse_intent', 'compile_ptb');
+  graph.addEdge('compile_ptb', 'guardian');
+  graph.addEdge('guardian', END);
 
   const compiled = graph.compile();
 
