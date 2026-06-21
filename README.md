@@ -117,68 +117,175 @@ Every single LLM prompt, response, token count, and latency is logged to LangSmi
 
 ---
 
-## 🧠 Core System Architecture
-
-The **SuiGuard** platform is designed as a highly cohesive, concurrently executing web application built for the Sui Overflow hackathon.
+## High-Level System Architecture
 
 ```mermaid
-flowchart TB
+graph TB
+    subgraph Frontend["Frontend - React + Vite"]
+        UI["Landing Page"]
+        INPUT["Intent Input Box"]
+        GUARD["Guardian Review Screen"]
+        SUCCESS["Success + Audit Trail"]
+    end
 
-%% ── STYLES ─────────────────────────
-classDef main fill:#0f172a,stroke:#6fbcf0,color:#f8fafc,stroke-width:2px
-classDef core fill:#0d1117,stroke:#a78bfa,color:#eff6ff,stroke-width:2px
-classDef infra fill:#161b22,stroke:#3fb950,color:#ecfdf5,stroke-width:2px
-classDef hitl fill:#7c2d12,stroke:#fb923c,color:#fff7ed,stroke-width:2px
+    subgraph Backend["Backend - Express + LangGraph"]
+        API["/api/intent and /api/confirm"]
+        GRAPH["LangGraph State Machine"]
+    end
 
-%% ── TOP LAYER ──────────────────────
-User["👤 Web3 User"]:::main
+    subgraph AI["AI System - LangGraph Nodes"]
+        N1["Node 1: Intent Parser"]
+        N2["Node 2: PTB Compiler"]
+        N3["Node 3: Guardian Engine"]
+        N4["Node 4: Executor"]
+    end
 
-subgraph App["🖥️ Application Layer (React)"]
-    direction LR
-    UI["Dual Mode UX (Story / Expert)"]
-    API["API Routes (Intent, Confirm)"]
-end
-class App main
+    subgraph External["External Services"]
+        BEDROCK["AWS Bedrock - Amazon Nova"]
+        SUI_RPC["Sui Testnet RPC"]
+        LANGSMITH["LangSmith Tracing"]
+    end
 
-%% ── CORE SYSTEM ────────────────────
-subgraph Core["🧠 AI System (LangGraph)"]
-    direction TB
-    A1["Intent Parser (Amazon Nova)"]
-    A2["PTB Compiler (Sui SDK)"]
-    A3["Guardian Risk Engine"]
-    A4["Executor"]
-end
-class Core core
+    UI --> INPUT
+    INPUT -->|POST /api/intent| API
+    API --> GRAPH
+    GRAPH --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 -->|Response| GUARD
+    GUARD -->|POST /api/confirm| API
+    API --> N4
+    N4 -->|Result| SUCCESS
 
-%% ── INFRASTRUCTURE ─────────────────
-subgraph Infra["☁️ Infrastructure"]
-    direction LR
-    LLM["🤖 AWS Bedrock"]
-    SUI["💧 Sui Testnet RPC"]
-end
-class Infra infra
+    N1 -.->|LLM Call| BEDROCK
+    N2 -.->|Build PTB| SUI_RPC
+    N3 -.->|Epoch Check| SUI_RPC
+    N4 -.->|Sign and Execute| SUI_RPC
+    GRAPH -.->|Trace Logs| LANGSMITH
+```
 
-%% ── HUMAN LOOP ─────────────────────
-subgraph HITL["👤 Human-in-the-Loop"]
-    direction TB
-    H1["Guardian Review"]
-    H2["Approve / Block"]
-end
-class HITL hitl
+---
 
-%% ── FLOW ───────────────────────────
-User --> UI --> API --> A1
+## LangGraph Pipeline - Detailed Node Flow
 
-A1 --> A2 --> A3 --> H1
-H1 --> H2
-H2 --> |If Approved| A4
+This is the internal state machine that powers the AI agent. Each node reads from and writes to a shared typed state object.
 
-%% infra connections
-A1 --> LLM
-A2 --> SUI
-A3 --> SUI
-A4 --> SUI
+```mermaid
+graph LR
+    START((START)) --> P["Intent Parser"]
+    P --> C["PTB Compiler"]
+    C --> G["Guardian Engine"]
+    G --> DONE((END))
 
+    P -.->|"Writes: intent, backendTrace"| STATE["Shared State Object"]
+    C -.->|"Writes: ptbPreview, ptbObject"| STATE
+    G -.->|"Writes: guardianResult, riskScore"| STATE
+
+    style START fill:#6fbcf0,stroke:#fff,color:#000
+    style DONE fill:#3fb950,stroke:#fff,color:#000
+    style STATE fill:#a78bfa,stroke:#fff,color:#000
+```
+
+> **Error Handling:** A `skipOnError` wrapper checks `state.stage === 'error'` before each node. If any node fails, all downstream nodes gracefully pass through without crashing the graph.
+
+---
+
+## Guardian Risk Engine - 5-Tier Check Flow
+
+```mermaid
+flowchart TD
+    INPUT["Receive Compiled PTB + Intent"] --> S["Check 1: Slippage Analysis"]
+    S --> O["Check 2: Oracle Staleness"]
+    O --> B["Check 3: Balance Utilization"]
+    B --> T["Check 4: Transaction Size"]
+    T --> A["Check 5: Address Validation"]
+
+    A --> SCORE["Aggregate Risk Score"]
+    SCORE --> DECIDE{"Any BLOCK flags?"}
+    DECIDE -->|No| SAFE{"Any WARN flags?"}
+    DECIDE -->|Yes| BLOCK["BLOCK - Transaction Halted"]
+    SAFE -->|No| PASS["PASS - Safe to Execute"]
+    SAFE -->|Yes| WARN["WARN - Proceed with Caution"]
+
+    style PASS fill:#3fb950,stroke:#fff,color:#000
+    style WARN fill:#d29922,stroke:#fff,color:#000
+    style BLOCK fill:#f85149,stroke:#fff,color:#000
+```
+
+### Risk Scoring Formula
+
+```
+risk_score = (BLOCK_count x 40) + (WARN_count x 15)
+```
+
+| Check | Data Source | PASS | WARN | BLOCK |
+|-------|-----------|------|------|-------|
+| Slippage | `tradeValue / poolDepth` | Below 1% | 1-5% | Above 5% |
+| Oracle | `suiClient.getCurrentEpoch()` | Below 5 min | 5-15 min | Above 15 min |
+| Balance | `walletBalance - gasReserve` | Below 80% used | Above 80% used | Insufficient |
+| Tx Size | `intent.amount` | Below 100 SUI | Above 100 SUI | N/A |
+| Address | `suiClient.getOwnedObjects()` | Has history | No history | Invalid format |
+
+---
+
+## User Flow - End-to-End Journey
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant FE as Frontend
+    participant BE as Backend API
+    participant LLM as Amazon Nova
+    participant SUI as Sui Testnet
+
+    User->>FE: Types "Swap 10 SUI for USDC"
+    FE->>BE: POST /api/intent
+    BE->>LLM: Parse with Zod Schema
+    LLM-->>BE: Structured JSON Intent
+    BE->>SUI: Build PTB via mysten/sui SDK
+    BE->>SUI: getCurrentEpoch for Guardian
+    BE-->>FE: intent + ptbPreview + guardianResult
+
+    Note over FE: Guardian Review Screen
+    Note over FE: Story Mode or Expert Mode toggle
+
+    User->>FE: Clicks Sign and Execute
+    FE->>BE: POST /api/confirm
+    BE->>SUI: signAndExecuteTransaction
+    SUI-->>BE: Transaction Digest
+    BE-->>FE: txDigest + explorerUrl
+
+    Note over FE: Success Screen + Audit Trail
+```
+
+---
+
+## Deployment Architecture
+
+```mermaid
+graph LR
+    subgraph Vercel["Vercel - Frontend"]
+        REACT["React + Vite Build"]
+    end
+
+    subgraph Render["Render - Backend"]
+        EXPRESS["Express + LangGraph"]
+    end
+
+    subgraph AWS["AWS Cloud"]
+        BEDROCK["Bedrock - Amazon Nova"]
+    end
+
+    subgraph Sui["Sui Network"]
+        TESTNET["Testnet RPC"]
+    end
+
+    USER["User Browser"] --> REACT
+    REACT -->|VITE_API_URL| EXPRESS
+    EXPRESS -->|AWS SDK| BEDROCK
+    EXPRESS -->|mysten/sui| TESTNET
+
+    style USER fill:#6fbcf0,stroke:#fff,color:#000
 ```
 
 ---
@@ -188,12 +295,12 @@ A4 --> SUI
 SuiGuard features a **toggle switch** on the Guardian Review screen:
 
 ### Story Mode (For Beginners)
-- Shows a clean "You Give → You Get" card with token icons
-- Displays risk checks as simple colored badges (✓, ⚠, ✕)
+- Shows a clean "You Give / You Get" card with token icons
+- Displays risk checks as simple colored badges
 - Uses plain English explanations
 - Hides all technical jargon (no PTBs, no JSON, no hex)
 
-### Expert Mode (For Developers & Judges)
+### Expert Mode (For Developers and Judges)
 - Shows the raw extracted intent JSON from the LLM
 - Displays the full serialized PTB payload with syntax highlighting
 - Includes a Guardian Risk Matrix table with detailed threshold data
