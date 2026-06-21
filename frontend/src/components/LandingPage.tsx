@@ -23,9 +23,9 @@ export default function LandingPage({ onLaunch }: Props) {
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#8b949e]">
             <span onClick={() => scrollToSection('overview')} className="hover:text-white cursor-pointer transition-colors">Overview</span>
-            <span onClick={() => scrollToSection('intent-engine')} className="hover:text-[#6fbcf0] cursor-pointer transition-colors">Intent Engine</span>
-            <span onClick={() => scrollToSection('guardian-checks')} className="hover:text-[#a78bfa] cursor-pointer transition-colors">Guardian Checks</span>
-            <span onClick={() => scrollToSection('execution-layer')} className="hover:text-[#3fb950] cursor-pointer transition-colors">Execution Layer</span>
+            <span onClick={() => scrollToSection('intent-engine')} className="hover:text-[#6fbcf0] cursor-pointer transition-colors">Intent Parser</span>
+            <span onClick={() => scrollToSection('ptb-compiler')} className="hover:text-[#3fb950] cursor-pointer transition-colors">PTB Compiler</span>
+            <span onClick={() => scrollToSection('guardian-checks')} className="hover:text-[#a78bfa] cursor-pointer transition-colors">Guardian Engine</span>
           </div>
           <button 
             onClick={onLaunch}
@@ -86,7 +86,7 @@ export default function LandingPage({ onLaunch }: Props) {
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             </div>
             <div>
-              <p className="text-[10px] text-[#6fbcf0] font-bold uppercase tracking-widest mb-1">Node 1: LangGraph Integration</p>
+              <p className="text-[10px] text-[#6fbcf0] font-bold uppercase tracking-widest mb-1">Node 1: Intent Parser</p>
               <h2 className="text-3xl md:text-4xl font-extrabold text-white">The Intent Engine</h2>
             </div>
           </div>
@@ -144,20 +144,20 @@ export default function LandingPage({ onLaunch }: Props) {
           </div>
         </section>
 
-        {/* ─── DEEP DIVE: GUARDIAN CHECKS ─── */}
-        <section id="guardian-checks" className="scroll-mt-24 pt-16 mb-24">
+        {/* ─── DEEP DIVE: PTB COMPILER ─── */}
+        <section id="ptb-compiler" className="scroll-mt-24 pt-16 mb-24">
           <div className="flex items-center gap-4 mb-12">
-            <div className="w-16 h-16 rounded-2xl bg-[#a78bfa]/10 border border-[#a78bfa]/20 flex items-center justify-center text-[#a78bfa]">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <div className="w-16 h-16 rounded-2xl bg-[#3fb950]/10 border border-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
             </div>
             <div>
-              <p className="text-[10px] text-[#a78bfa] font-bold uppercase tracking-widest mb-1">Node 2: The Safety Layer</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white">5-Tier Guardian Risk Analysis</h2>
+              <p className="text-[10px] text-[#3fb950] font-bold uppercase tracking-widest mb-1">Node 2: PTB Compiler</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white">Programmable Transaction Blocks</h2>
             </div>
           </div>
 
           <p className="text-[#8b949e] text-lg max-w-3xl mb-12 leading-relaxed">
-            Blindly executing AI-generated transactions is dangerous. Before the user is ever presented with a confirmation screen, the SuiGuard Guardian Node runs a deterministic simulation against the proposed Programmable Transaction Block (PTB).
+            Once the Intent Parser extracts the structured intent, the PTB Compiler translates it into a native Sui Programmable Transaction Block using the official <strong>@mysten/sui</strong> TypeScript SDK. Each action is compiled into atomic on-chain commands.
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -198,15 +198,15 @@ export default function LandingPage({ onLaunch }: Props) {
           </div>
         </section>
 
-        {/* ─── DEEP DIVE: EXECUTION LAYER ─── */}
-        <section id="execution-layer" className="scroll-mt-24 pt-16 mb-24">
+        {/* ─── DEEP DIVE: GUARDIAN ENGINE ─── */}
+        <section id="guardian-checks" className="scroll-mt-24 pt-16 mb-24">
           <div className="flex items-center gap-4 mb-12">
-            <div className="w-16 h-16 rounded-2xl bg-[#3fb950]/10 border border-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            <div className="w-16 h-16 rounded-2xl bg-[#a78bfa]/10 border border-[#a78bfa]/20 flex items-center justify-center text-[#a78bfa]">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </div>
             <div>
-              <p className="text-[10px] text-[#3fb950] font-bold uppercase tracking-widest mb-1">Node 3: Blockchain Interoperability</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white">Programmable Transaction Blocks (PTBs)</h2>
+              <p className="text-[10px] text-[#a78bfa] font-bold uppercase tracking-widest mb-1">Node 3: Guardian Engine</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white">5-Tier Pre-Flight Risk Analysis</h2>
             </div>
           </div>
 

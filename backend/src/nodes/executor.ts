@@ -8,7 +8,7 @@ export async function executorNode(
   const { ptbObject, intent, userConfirmed, guardianResult } = state;
 
   if (!userConfirmed) {
-    console.log('⏭️  [Node 5] User cancelled — skipping execution');
+    console.log('⏭️  [Node 4] User cancelled — skipping execution');
     return { stage: 'done', txDigest: undefined };
   }
 
@@ -32,7 +32,7 @@ export async function executorNode(
     return { error: 'No PTB to execute', stage: 'error' };
   }
 
-  console.log('⚡ [Node 5] Executing transaction on Sui testnet...');
+  console.log('⚡ [Node 4] Executing transaction on Sui testnet...');
 
   try {
     const result = await suiClient.signAndExecuteTransaction({
@@ -47,7 +47,7 @@ export async function executorNode(
 
     if (result.effects?.status?.status !== 'success') {
       const errMsg = result.effects?.status?.error || 'Transaction failed on-chain';
-      console.error('❌ [Node 5] Transaction failed:', errMsg);
+      console.error('❌ [Node 4] Transaction failed:', errMsg);
       return {
         error: `Transaction failed: ${errMsg}`,
         stage: 'error',
@@ -57,7 +57,7 @@ export async function executorNode(
     const digest = result.digest;
     const explorerUrl = `https://suiscan.xyz/testnet/tx/${digest}`;
 
-    console.log('✅ [Node 5] Transaction SUCCESS!');
+    console.log('✅ [Node 4] Transaction SUCCESS!');
     console.log('   Digest:', digest);
     console.log('   Explorer:', explorerUrl);
 
@@ -67,7 +67,7 @@ export async function executorNode(
       stage: 'done',
     };
   } catch (e: any) {
-    console.error('❌ [Node 5] Execution error:', e.message);
+    console.error('❌ [Node 4] Execution error:', e.message);
     return {
       error: `Execution failed: ${e.message}`,
       stage: 'error',
