@@ -119,6 +119,13 @@ Every single LLM prompt, response, token count, and latency is logged to LangSmi
 
 ## High-Level System Architecture
 
+<p align="center">
+  <img src="images/01_high_level_architecture.png" alt="High Level System Architecture" width="700"/>
+</p>
+
+<details>
+<summary>View as Mermaid (interactive)</summary>
+
 ```mermaid
 graph TB
     subgraph Frontend["Frontend - React + Vite"]
@@ -164,11 +171,20 @@ graph TB
     GRAPH -.->|Trace Logs| LANGSMITH
 ```
 
+</details>
+
 ---
 
 ## LangGraph Pipeline - Detailed Node Flow
 
+<p align="center">
+  <img src="images/02_langgraph_pipeline.png" alt="LangGraph Pipeline Node Flow" width="700"/>
+</p>
+
 This is the internal state machine that powers the AI agent. Each node reads from and writes to a shared typed state object.
+
+<details>
+<summary>View as Mermaid (interactive)</summary>
 
 ```mermaid
 graph LR
@@ -186,11 +202,20 @@ graph LR
     style STATE fill:#a78bfa,stroke:#fff,color:#000
 ```
 
+</details>
+
 > **Error Handling:** A `skipOnError` wrapper checks `state.stage === 'error'` before each node. If any node fails, all downstream nodes gracefully pass through without crashing the graph.
 
 ---
 
 ## Guardian Risk Engine - 5-Tier Check Flow
+
+<p align="center">
+  <img src="images/03_guardian_risk_engine.png" alt="Guardian Risk Engine Flow" width="600"/>
+</p>
+
+<details>
+<summary>View as Mermaid (interactive)</summary>
 
 ```mermaid
 flowchart TD
@@ -212,6 +237,8 @@ flowchart TD
     style BLOCK fill:#f85149,stroke:#fff,color:#000
 ```
 
+</details>
+
 ### Risk Scoring Formula
 
 ```
@@ -229,6 +256,13 @@ risk_score = (BLOCK_count x 40) + (WARN_count x 15)
 ---
 
 ## User Flow - End-to-End Journey
+
+<p align="center">
+  <img src="images/04_user_flow_sequence.png" alt="User Flow Sequence Diagram" width="700"/>
+</p>
+
+<details>
+<summary>View as Mermaid (interactive)</summary>
 
 ```mermaid
 sequenceDiagram
@@ -258,9 +292,18 @@ sequenceDiagram
     Note over FE: Success Screen + Audit Trail
 ```
 
+</details>
+
 ---
 
 ## Deployment Architecture
+
+<p align="center">
+  <img src="images/05_deployment_architecture.png" alt="Deployment Architecture" width="700"/>
+</p>
+
+<details>
+<summary>View as Mermaid (interactive)</summary>
 
 ```mermaid
 graph LR
@@ -287,6 +330,8 @@ graph LR
 
     style USER fill:#6fbcf0,stroke:#fff,color:#000
 ```
+
+</details>
 
 ---
 
