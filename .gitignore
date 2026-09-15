@@ -20,3 +20,7 @@ dist/
 # Logs
 *.log
 npm-debug.log*
+
+# secrets, build output and local noise
+build/
+.next/
